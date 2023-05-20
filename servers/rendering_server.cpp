@@ -1500,6 +1500,12 @@ RID RenderingServer::_texture_2d_layered_create(const TypedArray<Image> &p_layer
 RID RenderingServer::_texture_3d_create(Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const TypedArray<Image> &p_data) {
 	return texture_3d_create(p_format, p_width, p_height, p_depth, p_mipmaps, _get_imgvec(p_data));
 }
+RID RenderingServer::_texture_2d_layered_with_usage_create(const TypedArray<Image> &p_layers, TextureLayeredType p_layered_type, uint32_t p_usage_bits) {
+	return texture_2d_layered_with_usage_create(_get_imgvec(p_layers), p_layered_type, p_usage_bits);
+}
+RID RenderingServer::_texture_3d_with_usage_create(Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const TypedArray<Image> &p_data, uint32_t p_usage_bits) {
+	return texture_3d_with_usage_create(p_format, p_width, p_height, p_depth, p_mipmaps, _get_imgvec(p_data), p_usage_bits);
+}
 
 void RenderingServer::_texture_3d_update(RID p_texture, const TypedArray<Image> &p_data) {
 	texture_3d_update(p_texture, _get_imgvec(p_data));
@@ -1678,6 +1684,12 @@ void RenderingServer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("texture_2d_layered_create", "layers", "layered_type"), &RenderingServer::_texture_2d_layered_create);
 	ClassDB::bind_method(D_METHOD("texture_3d_create", "format", "width", "height", "depth", "mipmaps", "data"), &RenderingServer::_texture_3d_create);
 	ClassDB::bind_method(D_METHOD("texture_proxy_create", "base"), &RenderingServer::texture_proxy_create);
+
+	ClassDB::bind_method(D_METHOD("texture_2d_with_usage_create", "image", "usage_bits"), &RenderingServer::texture_2d_with_usage_create);
+	ClassDB::bind_method(D_METHOD("texture_2d_layered_with_usage_create", "layers", "layered_type", "usage_bits"), &RenderingServer::_texture_2d_layered_with_usage_create);
+	ClassDB::bind_method(D_METHOD("texture_3d_with_usage_create", "format", "width", "height", "depth", "mipmaps", "data", "usage_bits"), &RenderingServer::_texture_3d_with_usage_create);
+
+	ClassDB::bind_method(D_METHOD("texture_get_rd_rid", "texture"), &RenderingServer::texture_get_rd_rid);
 
 	ClassDB::bind_method(D_METHOD("texture_2d_update", "texture", "image", "layer"), &RenderingServer::texture_2d_update);
 	ClassDB::bind_method(D_METHOD("texture_3d_update", "texture", "data"), &RenderingServer::_texture_3d_update);

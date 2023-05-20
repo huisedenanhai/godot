@@ -48,6 +48,11 @@ class Texture : public Resource {
 
 public:
 	Texture() {}
+
+	RID get_rd_texture_rid() const;
+
+protected:
+	static void _bind_methods();
 };
 
 class Texture2D : public Texture {
@@ -113,7 +118,9 @@ protected:
 
 public:
 	void set_image(const Ref<Image> &p_image);
+	void set_image_with_usage(const Ref<Image> &p_image, uint32_t usage_bits);
 	static Ref<ImageTexture> create_from_image(const Ref<Image> &p_image);
+	static Ref<ImageTexture> create_from_image_with_usage(const Ref<Image> &p_image, uint32_t usage_bits);
 
 	Image::Format get_format() const;
 

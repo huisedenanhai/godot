@@ -788,6 +788,10 @@ void TextureStorage::texture_free(RID p_texture) {
 }
 
 void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_image) {
+	texture_2d_with_usage_initialize(p_texture, p_image, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT);
+}
+
+void TextureStorage::texture_2d_with_usage_initialize(RID p_texture, const Ref<Image> &p_image, uint32_t p_usage_bits) {
 	ERR_FAIL_COND(p_image.is_null());
 
 	TextureToRDFormat ret_format;
@@ -820,7 +824,7 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 		rd_format.mipmaps = texture.mipmaps;
 		rd_format.texture_type = texture.rd_type;
 		rd_format.samples = RD::TEXTURE_SAMPLES_1;
-		rd_format.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
+		rd_format.usage_bits = p_usage_bits;
 		if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 			rd_format.shareable_formats.push_back(texture.rd_format);
 			rd_format.shareable_formats.push_back(texture.rd_format_srgb);
@@ -857,6 +861,10 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 }
 
 void TextureStorage::texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type) {
+	texture_2d_layered_with_usage_initialize(p_texture, p_layers, p_layered_type, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT);
+}
+
+void TextureStorage::texture_2d_layered_with_usage_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type, uint32_t p_usage_bits) {
 	ERR_FAIL_COND(p_layers.size() == 0);
 
 	ERR_FAIL_COND(p_layered_type == RS::TEXTURE_LAYERED_CUBEMAP && p_layers.size() != 6);
@@ -930,7 +938,7 @@ void TextureStorage::texture_2d_layered_initialize(RID p_texture, const Vector<R
 		rd_format.mipmaps = texture.mipmaps;
 		rd_format.texture_type = texture.rd_type;
 		rd_format.samples = RD::TEXTURE_SAMPLES_1;
-		rd_format.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
+		rd_format.usage_bits = p_usage_bits;
 		if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 			rd_format.shareable_formats.push_back(texture.rd_format);
 			rd_format.shareable_formats.push_back(texture.rd_format_srgb);
@@ -969,6 +977,10 @@ void TextureStorage::texture_2d_layered_initialize(RID p_texture, const Vector<R
 }
 
 void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) {
+	texture_3d_with_usage_initialize(p_texture, p_format, p_width, p_height, p_depth, p_mipmaps, p_data, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT);
+}
+
+void TextureStorage::texture_3d_with_usage_initialize(RID p_texture, Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data, uint32_t p_usage_bits) {
 	ERR_FAIL_COND(p_data.size() == 0);
 
 	Image::Image3DValidateError verr = Image::validate_3d_image(p_format, p_width, p_height, p_depth, p_mipmaps, p_data);
@@ -1049,7 +1061,7 @@ void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format
 		rd_format.mipmaps = texture.mipmaps;
 		rd_format.texture_type = texture.rd_type;
 		rd_format.samples = RD::TEXTURE_SAMPLES_1;
-		rd_format.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
+		rd_format.usage_bits = p_usage_bits;
 		if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 			rd_format.shareable_formats.push_back(texture.rd_format);
 			rd_format.shareable_formats.push_back(texture.rd_format_srgb);
@@ -1083,6 +1095,12 @@ void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format
 	texture.is_proxy = false;
 
 	texture_owner.initialize_rid(p_texture, texture);
+}
+
+RID TextureStorage::texture_get_rd_rid(RID p_texture) const {
+	Texture *tex = texture_owner.get_or_null(p_texture);
+	ERR_FAIL_COND_V(!tex, RID());
+	return tex->rd_texture;
 }
 
 void TextureStorage::texture_proxy_initialize(RID p_texture, RID p_base) {

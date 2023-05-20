@@ -39,6 +39,14 @@
 #include "scene/resources/mesh.h"
 #include "servers/camera/camera_feed.h"
 
+RID Texture::get_rd_texture_rid() const {
+	return RenderingServer::get_singleton()->texture_get_rd_rid(get_rid());
+}
+
+void Texture::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_rd_texture_rid"), &Texture::get_rd_texture_rid);
+}
+
 int Texture2D::get_width() const {
 	int ret = 0;
 	GDVIRTUAL_REQUIRED_CALL(_get_width, ret);
@@ -170,24 +178,39 @@ void ImageTexture::_get_property_list(List<PropertyInfo> *p_list) const {
 Ref<ImageTexture> ImageTexture::create_from_image(const Ref<Image> &p_image) {
 	ERR_FAIL_COND_V_MSG(p_image.is_null(), Ref<ImageTexture>(), "Invalid image: null");
 	ERR_FAIL_COND_V_MSG(p_image->is_empty(), Ref<ImageTexture>(), "Invalid image: image is empty");
+	return create_from_image_with_usage(p_image, 0);
+}
+
+Ref<ImageTexture> ImageTexture::create_from_image_with_usage(const Ref<Image> &p_image, uint32_t usage) {
+	ERR_FAIL_COND_V_MSG(p_image.is_null() || p_image->is_empty(), Ref<ImageTexture>(), "Invalid image");
 
 	Ref<ImageTexture> image_texture;
 	image_texture.instantiate();
-	image_texture->set_image(p_image);
+	image_texture->set_image_with_usage(p_image, usage);
 	return image_texture;
 }
 
 void ImageTexture::set_image(const Ref<Image> &p_image) {
+	set_image_with_usage(p_image, 0);
+}
+
+void ImageTexture::set_image_with_usage(const Ref<Image> &p_image, uint32_t usage_bits) {
 	ERR_FAIL_COND_MSG(p_image.is_null() || p_image->is_empty(), "Invalid image");
 	w = p_image->get_width();
 	h = p_image->get_height();
 	format = p_image->get_format();
 	mipmaps = p_image->has_mipmaps();
 
-	if (texture.is_null()) {
-		texture = RenderingServer::get_singleton()->texture_2d_create(p_image);
+	RID new_texture{};
+	if (usage_bits) {
+		new_texture = RenderingServer::get_singleton()->texture_2d_with_usage_create(p_image, usage_bits);
 	} else {
-		RID new_texture = RenderingServer::get_singleton()->texture_2d_create(p_image);
+		new_texture = RenderingServer::get_singleton()->texture_2d_create(p_image);
+	}
+
+	if (texture.is_null()) {
+		texture = new_texture;
+	} else {
 		RenderingServer::get_singleton()->texture_replace(texture, new_texture);
 	}
 	notify_property_list_changed();
@@ -322,9 +345,11 @@ void ImageTexture::set_path(const String &p_path, bool p_take_over) {
 
 void ImageTexture::_bind_methods() {
 	ClassDB::bind_static_method("ImageTexture", D_METHOD("create_from_image", "image"), &ImageTexture::create_from_image);
+	ClassDB::bind_static_method("ImageTexture", D_METHOD("create_from_image_with_usage", "image", "usage_bits"), &ImageTexture::create_from_image_with_usage);
 	ClassDB::bind_method(D_METHOD("get_format"), &ImageTexture::get_format);
 
 	ClassDB::bind_method(D_METHOD("set_image", "image"), &ImageTexture::set_image);
+	ClassDB::bind_method(D_METHOD("set_image_with_usage", "image", "usage_bits"), &ImageTexture::set_image_with_usage);
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
 	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
 }

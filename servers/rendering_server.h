@@ -108,6 +108,11 @@ public:
 	virtual RID texture_3d_create(Image::Format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) = 0; //all slices, then all the mipmaps, must be coherent
 	virtual RID texture_proxy_create(RID p_base) = 0;
 
+	virtual RID texture_2d_with_usage_create(const Ref<Image> &p_image, uint32_t p_usage_bits) = 0;
+	virtual RID texture_2d_layered_with_usage_create(const Vector<Ref<Image>> &p_layers, TextureLayeredType p_layered_type, uint32_t p_usage_bits) = 0;
+	virtual RID texture_3d_with_usage_create(Image::Format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data, uint32_t p_usage_bits) = 0; //all slices, then all the mipmaps, must be coherent
+	virtual RID texture_get_rd_rid(RID p_texture) const = 0;
+
 	virtual void texture_2d_update(RID p_texture, const Ref<Image> &p_image, int p_layer = 0) = 0;
 	virtual void texture_3d_update(RID p_texture, const Vector<Ref<Image>> &p_data) = 0;
 	virtual void texture_proxy_update(RID p_texture, RID p_proxy_to) = 0;
@@ -1606,6 +1611,8 @@ private:
 	// Binder helpers
 	RID _texture_2d_layered_create(const TypedArray<Image> &p_layers, TextureLayeredType p_layered_type);
 	RID _texture_3d_create(Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const TypedArray<Image> &p_data);
+	RID _texture_2d_layered_with_usage_create(const TypedArray<Image> &p_layers, TextureLayeredType p_layered_type, uint32_t p_usage_bits);
+	RID _texture_3d_with_usage_create(Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const TypedArray<Image> &p_data, uint32_t p_usage_bits);
 	void _texture_3d_update(RID p_texture, const TypedArray<Image> &p_data);
 	TypedArray<Image> _texture_3d_get(RID p_texture) const;
 	TypedArray<Dictionary> _shader_get_shader_parameter_list(RID p_shader) const;
