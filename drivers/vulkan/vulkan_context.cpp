@@ -504,6 +504,12 @@ Error VulkanContext::_initialize_device_extensions() {
 	register_requested_device_extension(VK_KHR_IMAGE_FORMAT_LIST_EXTENSION_NAME, false);
 	register_requested_device_extension(VK_KHR_MAINTENANCE_2_EXTENSION_NAME, false);
 
+	register_requested_device_extension(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, false);
+	register_requested_device_extension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME, false);
+	register_requested_device_extension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, false);
+	register_requested_device_extension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, false);
+	register_requested_device_extension(VK_KHR_RAY_QUERY_EXTENSION_NAME, false);
+
 	// TODO consider the following extensions:
 	// - VK_KHR_spirv_1_4
 	// - VK_KHR_swapchain_mutable_format

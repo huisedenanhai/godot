@@ -123,6 +123,7 @@ public:
 		DeviceFamily device_family = DEVICE_UNKNOWN;
 		uint32_t version_major = 1.0;
 		uint32_t version_minor = 0.0;
+		bool supports_acceleration_structure = false;
 	};
 
 	typedef String (*ShaderSPIRVGetCacheKeyFunction)(const RenderingDevice *p_render_device);
