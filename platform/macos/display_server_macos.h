@@ -44,6 +44,8 @@
 #include "drivers/vulkan/rendering_device_vulkan.h"
 #endif // VULKAN_ENABLED
 
+#include "rendering_device_metal.h"
+
 #define BitMap _QDBitMap // Suppress deprecated QuickDraw definition.
 
 #import <AppKit/AppKit.h>
@@ -133,6 +135,9 @@ private:
 	VulkanContextMacOS *context_vulkan = nullptr;
 	RenderingDeviceVulkan *rendering_device_vulkan = nullptr;
 #endif
+
+	RenderingDeviceMetal *rendering_device_metal = nullptr;
+
 	String rendering_driver;
 
 	NSMenu *apple_menu = nullptr;

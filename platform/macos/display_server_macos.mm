@@ -3676,6 +3676,8 @@ Vector<String> DisplayServerMacOS::get_rendering_drivers_func() {
 	drivers.push_back("opengl3");
 #endif
 
+	drivers.push_back("metal");
+
 	return drivers;
 }
 
@@ -3967,6 +3969,12 @@ DisplayServerMacOS::DisplayServerMacOS(const String &p_rendering_driver, WindowM
 		RendererCompositorRD::make_current();
 	}
 #endif
+
+	if (rendering_driver == "metal") {
+		rendering_device_metal = memnew(RenderingDeviceMetal);
+
+		RendererCompositorRD::make_current();
+	}
 
 	screen_set_keep_on(GLOBAL_GET("display/window/energy_saving/keep_screen_on"));
 }

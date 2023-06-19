@@ -25,6 +25,7 @@ files = [
     "joypad_macos.cpp",
     "vulkan_context_macos.mm",
     "gl_manager_macos_legacy.mm",
+    "rendering_device_metal.mm",
 ]
 
 prog = env.add_program("#bin/godot", files)
